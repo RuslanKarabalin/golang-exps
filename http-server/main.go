@@ -11,34 +11,44 @@ type someType struct {
 	Text string `json:"text"`
 }
 
-var some someType
-
-func getSomeHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Info("Call 'getSomeHandler'")
-	fmt.Fprintf(w, "%s", some.Text)
+func getSomeHandler(somes *map[int]someType) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Call 'getSomeHandler'")
+		jsonBytes, err := json.MarshalIndent(*somes, "", "  ")
+		if err != nil {
+			slog.Error("Can't code somes", slog.Any("error", err))
+		}
+		fmt.Fprintf(w, "%s", jsonBytes)
+	}
 }
 
-func postSomeHandler(w http.ResponseWriter, r *http.Request) {
-	slog.Info("Call 'postSomeHandler'")
+func postSomeHandler(id *int, somes *map[int]someType) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Call 'postSomeHandler'")
 
-	dec := json.NewDecoder(r.Body)
-	dec.DisallowUnknownFields()
+		dec := json.NewDecoder(r.Body)
+		dec.DisallowUnknownFields()
 
-	var tmp someType
+		var tmp someType
 
-	if err := dec.Decode(&tmp); err != nil {
-		slog.Error("Can't decode body", slog.Any("error", err))
-		http.Error(w, "Can't decode body", http.StatusBadRequest)
-		return
+		if err := dec.Decode(&tmp); err != nil {
+			slog.Error("Can't decode body", slog.Any("error", err))
+			http.Error(w, "Can't decode body", http.StatusBadRequest)
+			return
+		}
+		(*somes)[*id] = tmp
+		(*id)++
 	}
-	some = tmp
 }
 
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /some", getSomeHandler)
-	mux.HandleFunc("POST /some", postSomeHandler)
+	id := new(int(0))
+	somes := new(make(map[int]someType, 0))
+
+	mux.HandleFunc("GET /some", getSomeHandler(somes))
+	mux.HandleFunc("POST /some", postSomeHandler(id, somes))
 
 	slog.Info("Server listening on port 8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
