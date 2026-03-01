@@ -17,6 +17,8 @@ func GetAllSomeHandler(s *store.Server) http.HandlerFunc {
 		defer s.Mtx.RUnlock()
 		if err := json.NewEncoder(w).Encode(s.Somes); err != nil {
 			slog.Error("Can't encode somes", slog.Any("error", err))
+			http.Error(w, "Can't encode somes", http.StatusBadRequest)
+			return
 		}
 	}
 }
