@@ -7,7 +7,6 @@ import (
 	"os"
 	"serv/internal/config"
 	"serv/internal/handler"
-	"serv/internal/model"
 	"serv/internal/store"
 	"time"
 
@@ -55,23 +54,17 @@ func main() {
 		slog.Error("Cannot insert into somes table", slog.Any("error", err))
 	}
 
-	somes, err := store.GetAllSomes(conn)
-
-	for _, some := range somes {
-		slog.Info("Some:", slog.Any("some", some))
-	}
-
 	mux := http.NewServeMux()
 
-	server := &store.Server{
-		Somes: make(map[int]model.SomeType),
+	store := &store.Store{
+		Conn: conn,
 	}
 
-	mux.HandleFunc("GET /somes", handler.GetAllSomeHandler(server))
-	mux.HandleFunc("GET /somes/{id}", handler.GetSomeByIdHandler(server))
-	mux.HandleFunc("POST /somes", handler.PostSomeHandler(server))
-	mux.HandleFunc("PUT /somes/{id}", handler.PutSomeHandler(server))
-	mux.HandleFunc("DELETE /somes/{id}", handler.DeleteSomeByIdHandler(server))
+	mux.HandleFunc("GET /somes", handler.GetAllSomeHandler(store))
+	mux.HandleFunc("GET /somes/{id}", handler.GetSomeByIdHandler(store))
+	mux.HandleFunc("POST /somes", handler.PostSomeHandler(store))
+	// mux.HandleFunc("PUT /somes/{id}", handler.PutSomeHandler(store))
+	// mux.HandleFunc("DELETE /somes/{id}", handler.DeleteSomeByIdHandler(store))
 
 	addr := cfg.GetAddr()
 	slog.Info("Server listening on", slog.String("address", addr))
