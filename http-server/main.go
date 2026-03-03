@@ -45,6 +45,22 @@ func main() {
 		slog.Error("Cannot create somes table", slog.Any("error", err))
 	}
 
+	insertSome := `
+	insert into somes(name)
+	values('Alice')
+	`
+
+	_, err = conn.Exec(ctx, insertSome)
+	if err != nil {
+		slog.Error("Cannot insert into somes table", slog.Any("error", err))
+	}
+
+	somes, err := store.GetAllSomes(conn)
+
+	for _, some := range somes {
+		slog.Info("Some:", slog.Any("some", some))
+	}
+
 	mux := http.NewServeMux()
 
 	server := &store.Server{

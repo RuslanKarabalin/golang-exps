@@ -1,5 +1,6 @@
 package model
 
 type SomeType struct {
-	Text string `json:"text"`
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
