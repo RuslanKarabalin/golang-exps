@@ -14,6 +14,20 @@ type Store struct {
 	Mtx  sync.RWMutex
 }
 
+func (s *Store) InsertSome(some model.CreateSomeRequest) (int, error) {
+	id := -1
+	s.Mtx.RLock()
+	defer s.Mtx.RUnlock()
+	insertSome := "insert into somes(name) values($1) returning id"
+	genId := s.Conn.QueryRow(context.Background(), insertSome, some.Name)
+	err := genId.Scan(&id)
+	if err != nil {
+		slog.Warn("Can't scan some", slog.Any("error", err))
+		return id, err
+	}
+	return id, nil
+}
+
 func (s *Store) GetAllSomes() ([]model.SomeType, error) {
 	s.Mtx.Lock()
 	defer s.Mtx.Unlock()
@@ -49,18 +63,4 @@ func (s *Store) GetSomeById(id int) (*model.SomeType, error) {
 		return nil, err
 	}
 	return &some, nil
-}
-
-func (s *Store) InsertSome(some model.CreateSomeRequest) (int, error) {
-	id := -1
-	s.Mtx.RLock()
-	defer s.Mtx.RUnlock()
-	insertSome := "insert into somes(name) values($1) returning id"
-	genId := s.Conn.QueryRow(context.Background(), insertSome, some.Name)
-	err := genId.Scan(&id)
-	if err != nil {
-		slog.Warn("Can't scan some", slog.Any("error", err))
-		return id, err
-	}
-	return id, nil
 }

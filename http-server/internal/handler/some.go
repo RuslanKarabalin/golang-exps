@@ -9,6 +9,34 @@ import (
 	"strconv"
 )
 
+func PostSomeHandler(s *store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		slog.Info("Call 'postSomeHandler'")
+
+		dec := json.NewDecoder(r.Body)
+		dec.DisallowUnknownFields()
+
+		var tmp model.CreateSomeRequest
+
+		if err := dec.Decode(&tmp); err != nil {
+			slog.Error("Can't decode body", slog.Any("error", err))
+			http.Error(w, "Can't decode body", http.StatusBadRequest)
+			return
+		}
+
+		id, err := s.InsertSome(tmp)
+		if err != nil {
+			slog.Error("Can't insert some", slog.Any("error", err))
+			http.Error(w, "Can't insert some", http.StatusBadRequest)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		_ = json.NewEncoder(w).Encode(map[string]int{"id": id})
+	}
+}
+
 func GetAllSomeHandler(s *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slog.Info("Call 'getAllSomeHandler'")
@@ -50,34 +78,6 @@ func GetSomeByIdHandler(s *store.Store) http.HandlerFunc {
 		if err := json.NewEncoder(w).Encode(some); err != nil {
 			slog.Error("Can't encode some", slog.Any("error", err))
 		}
-	}
-}
-
-func PostSomeHandler(s *store.Store) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		slog.Info("Call 'postSomeHandler'")
-
-		dec := json.NewDecoder(r.Body)
-		dec.DisallowUnknownFields()
-
-		var tmp model.CreateSomeRequest
-
-		if err := dec.Decode(&tmp); err != nil {
-			slog.Error("Can't decode body", slog.Any("error", err))
-			http.Error(w, "Can't decode body", http.StatusBadRequest)
-			return
-		}
-
-		id, err := s.InsertSome(tmp)
-		if err != nil {
-			slog.Error("Can't insert some", slog.Any("error", err))
-			http.Error(w, "Can't insert some", http.StatusBadRequest)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		_ = json.NewEncoder(w).Encode(map[string]int{"id": id})
 	}
 }
 

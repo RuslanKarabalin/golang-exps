@@ -60,9 +60,9 @@ func main() {
 		Conn: conn,
 	}
 
+	mux.HandleFunc("POST /somes", handler.PostSomeHandler(store))
 	mux.HandleFunc("GET /somes", handler.GetAllSomeHandler(store))
 	mux.HandleFunc("GET /somes/{id}", handler.GetSomeByIdHandler(store))
-	mux.HandleFunc("POST /somes", handler.PostSomeHandler(store))
 	// mux.HandleFunc("PUT /somes/{id}", handler.PutSomeHandler(store))
 	// mux.HandleFunc("DELETE /somes/{id}", handler.DeleteSomeByIdHandler(store))
 
