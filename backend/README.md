@@ -4,43 +4,57 @@ Base golang backend project setup.
 
 ## Libs
 
+### Config
+
 <https://github.com/spf13/viper> - for env/yaml config reading
 
-```bash
-go get github.com/spf13/viper
-```
+### HTTP
 
-<https://github.com/jackc/pgx> - for PostgreSQL connection
+<https://github.com/gin-gonic/gin> - simple and popular web framework
 
-```bash
-go get github.com/jackc/pgx/v5
-```
+<http://github.com/go-chi/chi> - idiomatic and lightweight web framework
 
-<https://github.com/redis/go-redis> - for Redis connection
+<https://github.com/gofiber/fiber> - ergonomic and fast web framework
 
-```bash
-go get github.com/redis/go-redis/v9
-```
+### Observability
+
+<https://github.com/uber-go/zap> - better logging
 
 <https://github.com/open-telemetry/opentelemetry-go> - for logs, metrics, traces
 
-```bash
-go get go.opentelemetry.io/otel
-```
+### Databases and message queues
 
-<https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/otelslog> - for opentelemetry and slog integration
+<https://github.com/jackc/pgx> - for PostgreSQL connection
 
-```bash
-go get go.opentelemetry.io/contrib/bridges/otelslog
-```
+<https://github.com/redis/rueidis> - for Redis connection
+
+<https://github.com/mongodb/mongo-go-driver> for MongoDB connection
+
+<https://github.com/ClickHouse/clickhouse-go> for CLickHouse connection
+
+<https://github.com/IBM/sarama> - for Kafka connection
+
+<https://github.com/Masterminds/squirrel> - sql builder
+
+<https://github.com/avito-tech/go-transaction-manager> - database transaction manager
+
+### Testing
+
+<https://github.com/stretchr/testify> - unit tests
+
+<https://github.com/testcontainers/testcontainers-go> - integration tests
 
 ## Tools
 
+<https://github.com/golangci/golangci-lint> - linter
+
 <https://github.com/oapi-codegen/oapi-codegen> - for generating code from openapi specification
 
-<https://github.com/pressly/goose> - for database migration
+<https://github.com/swaggo/swag> - for generating swagger specification from code
 
-<https://github.com/golangci/golangci-lint> - linter
+<https://github.com/sqlc-dev/sqlc> - for generating code from sql
+
+<https://github.com/pressly/goose> - for database migration
 
 ## Project structure
 
@@ -51,6 +65,7 @@ backend/
 ├── cmd/
 │   └── api/
 │       └── main.go         # entrypoint - wire up deps, start server
+├── docs/                   # documentation, erd, c4 and etc
 ├── infra/                  # infrastructure config, not Go code
 │   ├── docker-compose.yaml
 │   ├── otelcol/
