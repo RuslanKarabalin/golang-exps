@@ -1,6 +1,0 @@
-image:
-
-stages:
-  - lint
-  - build
-  - test
