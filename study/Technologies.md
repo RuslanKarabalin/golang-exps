@@ -29,5 +29,7 @@ flowchart
         E0[elasticsearch]
         E1[logstash]
         E2[kibana]
+        F0[opentelemetry]
+        F1[jaeger]
     end
 ```
